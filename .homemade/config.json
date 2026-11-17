@@ -14,7 +14,7 @@
   ],
   "services": {
     "web": {
-      "cmd": "exec php -S 0.0.0.0:$PORT -t public/",
+      "cmd": "bash -lc 'cd /workspace/app && php -S 0.0.0.0:$PORT -t public/'",
       "port": 8000,
       "url": true,
       "healthcheck": {
@@ -24,7 +24,7 @@
       "order": 0
     },
     "sass": {
-      "cmd": "exec php bin/console sass:build --watch",
+      "cmd": "bash -lc 'cd /workspace/app && php bin/console sass:build --watch'",
       "displayName": "Sass Watcher",
       "order": 1
     }
