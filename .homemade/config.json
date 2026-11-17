@@ -1,0 +1,42 @@
+{
+  "$schema": "https://homemade.dev/schemas/latest/config.json",
+  "warmup": [
+    "composer install --no-interaction --no-progress --prefer-dist --no-scripts"
+  ],
+  "install": [
+    "composer install --no-interaction --no-progress --prefer-dist --no-scripts",
+    "exclude=$(git rev-parse --git-path info/exclude) && { grep -qxF /config/reference.php \"$exclude\" 2>/dev/null || printf '\\n/config/reference.php\\n' >> \"$exclude\"; }",
+    "mkdir -p var/data && if [ ! -f var/data/database.sqlite ]; then cp data/database.sqlite var/data/database.sqlite; fi",
+    "php bin/console cache:clear",
+    "php bin/console assets:install public",
+    "php bin/console importmap:install",
+    "php bin/console sass:build"
+  ],
+  "services": {
+    "web": {
+      "cmd": "exec php -S 0.0.0.0:$PORT -t public/",
+      "port": 8000,
+      "url": true,
+      "healthcheck": {
+        "path": "/"
+      },
+      "displayName": "Symfony Demo",
+      "order": 0
+    },
+    "sass": {
+      "cmd": "exec php bin/console sass:build --watch",
+      "displayName": "Sass Watcher",
+      "order": 1
+    }
+  },
+  "env_schema": [
+    "APP_ENV",
+    "APP_SECRET",
+    "APP_SHARE_DIR",
+    "DATABASE_URL",
+    "MAILER_DSN",
+    "DEFAULT_URI",
+    "SYMFONY_TRUSTED_PROXIES",
+    "SYMFONY_TRUSTED_HEADERS"
+  ]
+}
